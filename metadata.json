@@ -1,0 +1,4 @@
+{
+  "name": "ESL Error Annotator",
+  "description": "An AI-powered ESL writing error annotation and feedback system using RAG-based taxonomy and Supabase for storage."
+}
