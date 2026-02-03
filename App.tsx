@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { analyzeText } from './services/geminiService';
 import { saveRecord, fetchHistory } from './services/supabaseClient';
 import { AnalysisResult, DatabaseRecord, ViewMode } from './types';
@@ -36,12 +36,12 @@ const App: React.FC = () => {
   
   // Settings Modal State
   const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const [apiBaseUrl, setApiBaseUrl] = useState('');
 
   useEffect(() => {
     loadHistory();
-    const storedKey = localStorage.getItem('gemini_api_key');
-    if (storedKey) setApiKey(storedKey);
+    const storedKey = localStorage.getItem('api_base_url');
+    if (storedKey) setApiBaseUrl(storedKey);
   }, []);
 
   const loadHistory = async () => {
@@ -49,8 +49,8 @@ const App: React.FC = () => {
     setHistory(data);
   };
 
-  const handleSaveKey = () => {
-    localStorage.setItem('gemini_api_key', apiKey.trim());
+  const handleSaveApiUrl = () => {
+    localStorage.setItem('api_base_url', apiBaseUrl.trim());
     setShowSettings(false);
     setError(null); // Clear any previous auth errors
   };
@@ -70,7 +70,7 @@ const App: React.FC = () => {
     } catch (err: any) {
       setError(err.message || "An error occurred during analysis.");
       // If it's an auth error, open settings automatically to help the user
-      if (err.message?.includes('API Key')) {
+      if (err.message?.includes('API URL')) {
         setShowSettings(true);
       }
     } finally {
@@ -198,7 +198,7 @@ const App: React.FC = () => {
                       onClick={() => setShowSettings(true)}
                       className="text-sm font-semibold underline mt-2 hover:text-red-800"
                     >
-                      Configure API Key
+                      Configure API URL
                     </button>
                   )}
                 </div>
@@ -343,22 +343,22 @@ const App: React.FC = () => {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Google Gemini API Key
+                  Cloud Run API URL
                 </label>
                 <input
                   type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
+                  value={apiBaseUrl}
+                  onChange={(e) => setApiBaseUrl(e.target.value)}
+                  placeholder="https://your-cloud-run-url"
                   className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm font-mono"
                 />
                 <p className="text-xs text-slate-500 mt-2">
-                  Your API key is stored locally in your browser and is only used to communicate with Google's servers.
+                  Your API URL is stored locally in your browser and is used to call your Cloud Run backend.
                 </p>
               </div>
               <div className="flex justify-end pt-2">
                 <button
-                  onClick={handleSaveKey}
+                  onClick={handleSaveApiUrl}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-colors"
                 >
                   <Save size={16} /> Save Configuration
