@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import cors from 'cors';
 import { GoogleGenAI, Type } from '@google/genai';
 
@@ -58,7 +58,12 @@ const RESPONSE_SCHEMA = {
   required: ['corrected_text', 'annotations']
 };
 
-const ai = new GoogleGenAI({ vertexai: true, projectId: PROJECT_ID, location: LOCATION });
+const getAi = () => {
+  if (!PROJECT_ID) {
+    throw new Error('PROJECT_ID is not set. Configure it in Cloud Run env vars.');
+  }
+  return new GoogleGenAI({ vertexai: true, projectId: PROJECT_ID, location: LOCATION });
+};
 
 app.get('/healthz', (req, res) => {
   res.status(200).send('ok');
@@ -71,6 +76,7 @@ app.post('/analyze', async (req, res) => {
   }
 
   try {
+    const ai = getAi();
     const response = await ai.models.generateContent({
       model: MODEL,
       contents: {
